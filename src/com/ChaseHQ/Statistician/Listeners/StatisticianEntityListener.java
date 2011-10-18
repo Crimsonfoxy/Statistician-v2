@@ -69,12 +69,14 @@ public class StatisticianEntityListener extends EntityListener{
 			if (event.getEntity().getLastDamageCause() instanceof EntityDamageByEntityEvent) {
 				if (((EntityDamageByEntityEvent)event.getEntity().getLastDamageCause()).getDamager() instanceof Arrow) {
 					Arrow arrow = (Arrow)((EntityDamageByEntityEvent) event.getEntity().getLastDamageCause()).getDamager();
-					playerKiller = (Player)arrow.getShooter();
-					if (event.getEntity() instanceof Creature) {
-						edhPlayer.PlayerKilledCreatureProjectile(playerKiller, (Creature)event.getEntity(), arrow, cause);
-					} else if (event.getEntity() instanceof Slime) {
-						// I really cant believe Creatures arent considered slimes, this has to be a bug
-						edhPlayer.PlayerKilledSlimeProjectile(playerKiller, (Slime)event.getEntity(), arrow, cause);
+					if (arrow.getShooter() instanceof Player) {
+						playerKiller = (Player)arrow.getShooter();
+						if (event.getEntity() instanceof Creature) {
+							edhPlayer.PlayerKilledCreatureProjectile(playerKiller, (Creature)event.getEntity(), arrow, cause);
+						} else if (event.getEntity() instanceof Slime) {
+							// I really cant believe Creatures arent considered slimes, this has to be a bug
+							edhPlayer.PlayerKilledSlimeProjectile(playerKiller, (Slime)event.getEntity(), arrow, cause);
+						}
 					}
 				} else if (((EntityDamageByEntityEvent)event.getEntity().getLastDamageCause()).getDamager() instanceof Player) {
 

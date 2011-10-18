@@ -11,7 +11,7 @@ import com.ChaseHQ.Statistician.StatisticianPlugin;
 // *NOTE Config class must not be used before the plugin's onEnable is called.
 public class Config {
 	public static String _statisticianVersion;
-	public static final Integer DBVersion = 5;
+	public static final Integer DBVersion = 6;
 	public static String _logPrefix;
 	
 	private FileConfiguration _config;
