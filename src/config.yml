@@ -1,0 +1,6 @@
+database_address: localhost
+database_port: 3306
+database_name: mc_statistician
+database_username: mc_statistician
+database_password: mc_statistician
+database_update_time: 120

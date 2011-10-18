@@ -1,0 +1,8 @@
+name: Statistician
+main: com.ChaseHQ.Statistician.StatisticianPlugin
+version: 1.4.1
+author: ChaseHQ
+authors: [Coryf88]
+softdepend:
+    - Spout
+    
