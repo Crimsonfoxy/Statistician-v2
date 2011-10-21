@@ -2,13 +2,11 @@ package com.ChaseHQ.Statistician.Listeners;
 
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Creature;
-import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Explosive;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Slime;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityListener;
