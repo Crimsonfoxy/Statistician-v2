@@ -22,7 +22,7 @@ public class StatisticianEntityListener extends EntityListener{
 	
 	@Override
 	public void onEntityDeath(EntityDeathEvent event) {
-		if (event.getEntity().getLastDamageCause() == null) {
+		if (event.getEntity().getLastDamageCause() != null) {
 			Player playerVictim = null;
 			Player playerKiller = null;
 	
