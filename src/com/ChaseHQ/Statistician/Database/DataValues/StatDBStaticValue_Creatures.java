@@ -1,20 +1,29 @@
 package com.ChaseHQ.Statistician.Database.DataValues;
 
+import org.bukkit.entity.Blaze;
+import org.bukkit.entity.CaveSpider;
 import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Cow;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Creeper;
+import org.bukkit.entity.EnderDragon;
+import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Ghast;
 import org.bukkit.entity.Giant;
+import org.bukkit.entity.MagmaCube;
 import org.bukkit.entity.Monster;
+import org.bukkit.entity.MushroomCow;
 import org.bukkit.entity.Pig;
 import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Sheep;
+import org.bukkit.entity.Silverfish;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Slime;
+import org.bukkit.entity.Snowman;
 import org.bukkit.entity.Spider;
 import org.bukkit.entity.Squid;
+import org.bukkit.entity.Villager;
 import org.bukkit.entity.Wolf;
 import org.bukkit.entity.Zombie;
 
@@ -39,7 +48,16 @@ public enum StatDBStaticValue_Creatures implements IStaticValue {
 	TAME_WOLF(16),
 	SPIDER_JOCKY(17), 
 	BLOCK(18),
-	ZOMBIE(19);
+	ZOMBIE(19),
+	BLAZE(20),
+	CAVESPIDER(21),
+	ENDERDRAGON(22),
+	ENDERMAN(23),
+	MAGMACUBE(24),
+	MUSHROOMCOW(25),
+	SILVERFISH(26),
+	SNOWMAN(27),
+	VILLAGER(28);
 
 	private final Integer _id;
 	
@@ -59,6 +77,9 @@ public enum StatDBStaticValue_Creatures implements IStaticValue {
 		
 		if (creature instanceof Chicken)
 			return StatDBStaticValue_Creatures.CHICKEN;
+		
+		if (creature instanceof MushroomCow)
+			return StatDBStaticValue_Creatures.MUSHROOMCOW;
 		
 		if (creature instanceof Cow)
 			return StatDBStaticValue_Creatures.COW;
@@ -89,6 +110,9 @@ public enum StatDBStaticValue_Creatures implements IStaticValue {
 			return StatDBStaticValue_Creatures.SKELETON;
 		}
 		
+		if (creature instanceof MagmaCube) 
+			return StatDBStaticValue_Creatures.MAGMACUBE;
+		
 		if (creature instanceof Slime) 
 			return StatDBStaticValue_Creatures.SLIME;
 		
@@ -106,12 +130,33 @@ public enum StatDBStaticValue_Creatures implements IStaticValue {
 			return StatDBStaticValue_Creatures.ZOMBIE;
 		}
 		
+		if (creature instanceof CaveSpider)
+			return StatDBStaticValue_Creatures.CAVESPIDER;
+		
 		if (creature instanceof Spider) {
 			return StatDBStaticValue_Creatures.SPIDER;
 		}
 		
 		if (creature instanceof Giant)
 			return StatDBStaticValue_Creatures.GIANT;
+		
+		if (creature instanceof Blaze)
+			return StatDBStaticValue_Creatures.BLAZE;
+		
+		if (creature instanceof EnderDragon)
+			return StatDBStaticValue_Creatures.ENDERDRAGON;
+		
+		if (creature instanceof Enderman)
+			return StatDBStaticValue_Creatures.ENDERMAN;
+		
+		if (creature instanceof Silverfish)
+			return StatDBStaticValue_Creatures.SILVERFISH;
+		
+		if (creature instanceof Snowman)
+			return StatDBStaticValue_Creatures.SNOWMAN;
+		
+		if (creature instanceof Villager)
+			return StatDBStaticValue_Creatures.VILLAGER;
 		
 		if (creature instanceof Monster)
 			return StatDBStaticValue_Creatures.MONSTER;

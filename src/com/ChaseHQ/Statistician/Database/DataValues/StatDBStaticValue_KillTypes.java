@@ -16,7 +16,9 @@ public enum StatDBStaticValue_KillTypes implements IStaticValue {
 	LAVA(10),
 	CONTACT(11),
 	ENTITY_ATTACK(12),
-	CUSTOM(13);
+	CUSTOM(13),
+	SUICIDE(14),
+	STARVATION(15);
 
 	private final Integer _id;
 	
@@ -58,6 +60,10 @@ public enum StatDBStaticValue_KillTypes implements IStaticValue {
 			return StatDBStaticValue_KillTypes.ENTITY_ATTACK;
 		case CUSTOM:
 			return StatDBStaticValue_KillTypes.CUSTOM;
+		case SUICIDE:
+			return StatDBStaticValue_KillTypes.SUICIDE;
+		case STARVATION:
+			return StatDBStaticValue_KillTypes.STARVATION;
 		}
 		
 		return StatDBStaticValue_KillTypes.NONE;

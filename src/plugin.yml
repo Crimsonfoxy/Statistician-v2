@@ -1,6 +1,6 @@
 name: Statistician
 main: com.ChaseHQ.Statistician.StatisticianPlugin
-version: 2.0.3
+version: 2.0.4
 description: Extremely detailed player/server statistic tracking with web portal.
 website: http://dev.bukkit.org/server-mods/statisticianv2/
 author: ChaseHQ
