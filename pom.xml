@@ -2,10 +2,11 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.ChaseHQ</groupId>
   <artifactId>Statistician</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>2.0.4</version>
   <name>Statistician-v2</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	<powermock.version>1.4.10</powermock.version>
   </properties>
   <build>
   	<plugins>
@@ -18,12 +19,21 @@
                 <target>1.5</target>
             </configuration>
   		</plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>2.11</version>
+            <configuration>
+                <parallel>classes</parallel>
+                <useUnlimitedThreads>true</useUnlimitedThreads>
+            </configuration>
+        </plugin>
   	</plugins>
   </build>
   <repositories>
     <repository>
       <id>bukkit-repo</id>
-      <url>http://repo.bukkit.org/content/groups/public/</url>
+      <url>http://repo.bukkit.org/artifactory/repo</url>
     </repository>
   </repositories>
   <dependencies>
@@ -36,22 +46,19 @@
   		<groupId>junit</groupId>
   		<artifactId>junit</artifactId>
   		<version>4.8.2</version>
-  		<type>jar</type>
   		<scope>test</scope>
   	</dependency>
-  	<dependency>
-  		<groupId>org.powermock</groupId>
-  		<artifactId>powermock-module-junit4</artifactId>
-  		<version>1.4.9</version>
-  		<type>jar</type>
-  		<scope>test</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.powermock</groupId>
-  		<artifactId>powermock-api-mockito</artifactId>
-  		<version>1.4.9</version>
-  		<type>jar</type>
-  		<scope>test</scope>
-  	</dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-module-junit4</artifactId>
+      <version>${powermock.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-api-mockito</artifactId>
+      <version>${powermock.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
