@@ -127,7 +127,7 @@ public class StatisticianPlugin extends JavaPlugin {
 	}
 	
 	public boolean permissionToRecordStat(Player player) {
-		return !player.hasPermission("Statistician.ignore");
+		return !player.hasPermission("statistician.ignore");
 	}
 
 }

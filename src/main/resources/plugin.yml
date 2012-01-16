@@ -1,6 +1,6 @@
 name: Statistician
 main: com.ChaseHQ.Statistician.StatisticianPlugin
-version: 2.0.4
+version: ${project.version}
 description: Extremely detailed player/server statistic tracking with web portal.
 website: http://dev.bukkit.org/server-mods/statisticianv2/
 author: ChaseHQ
@@ -8,6 +8,6 @@ authors: [Coryf88]
 softdepend:
     - Spout
 permissions:
-  Statistician.ignore:
+  statistician.ignore:
     description: Don't record statistics of the player.
     default: false
