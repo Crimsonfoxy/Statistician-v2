@@ -33,7 +33,7 @@ public class StatDBConfig {
 		Log.ConsoleLog("Patching Database To Version " + versionPatch + ".");
 		SQLPatchFile = "stats_v"+ versionPatch +".sql";
 
-		InputStream is = getClass().getClassLoader().getResourceAsStream("com/ChaseHQ/Statistician/Database/SQLPatches/" + SQLPatchFile);
+		InputStream is = getClass().getClassLoader().getResourceAsStream("SQLPatches/" + SQLPatchFile);
 		if (is == null) {
 			Log.ConsoleLog("Could Not Load Database Patch File. Is it removed from the Jar?!");
 			throw new StatDBConnectFail();
