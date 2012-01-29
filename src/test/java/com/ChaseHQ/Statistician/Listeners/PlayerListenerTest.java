@@ -26,14 +26,14 @@ import com.ChaseHQ.Statistician.EventDataHandlers.EDHPlayer;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({PlayerJoinEvent.class, PlayerQuitEvent.class, PlayerMoveEvent.class, PlayerPickupItemEvent.class, PlayerDropItemEvent.class})
-public class StatisticianPlayerListenerTest {
+public class PlayerListenerTest {
 	private EDHPlayer passedEDH;
-	private StatisticianPlayerListener playerListener;
+	private PlayerListener playerListener;
 	
 	@Before
 	public void setUp() throws Exception {
 		this.passedEDH = Mockito.mock(EDHPlayer.class);
-		this.playerListener = new StatisticianPlayerListener(this.passedEDH);
+		this.playerListener = new PlayerListener(this.passedEDH);
 	}
 
 	@Test

@@ -20,14 +20,14 @@ import com.ChaseHQ.Statistician.EventDataHandlers.EDHPlayer;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({BlockBreakEvent.class, BlockPlaceEvent.class})
-public class StatisticianBlockListenerTest {
+public class BlockListenerTest {
 	private EDHPlayer passedEDH;
-	private StatisticianBlockListener blockListener;
+	private BlockListener blockListener;
 	
 	@Before
 	public void setUp() throws Exception {
 		this.passedEDH = Mockito.mock(EDHPlayer.class);
-		this.blockListener = new StatisticianBlockListener(this.passedEDH);
+		this.blockListener = new BlockListener(this.passedEDH);
 	}
 	
 	@Test

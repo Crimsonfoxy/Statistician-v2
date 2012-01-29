@@ -51,9 +51,9 @@ import com.ChaseHQ.Statistician.EventDataHandlers.EDHPlayer;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({EntityDeathEvent.class, EntityDamageEvent.class, EntityDamageByEntityEvent.class, EntityDamageByBlockEvent.class})
-public class StatisticianEntityListenerTest {
+public class EntityListenerTest {
 	private EDHPlayer passedEDH;
-	private StatisticianEntityListener entityListener;
+	private EntityListener entityListener;
 
 	/* Blaze.class, // fireballCreature
 	 * CaveSpider.class, // meleeCreature
@@ -147,7 +147,7 @@ public class StatisticianEntityListenerTest {
 	@Before
 	public void setUp() throws Exception {
 		this.passedEDH = Mockito.mock(EDHPlayer.class);
-		this.entityListener = new StatisticianEntityListener(this.passedEDH);
+		this.entityListener = new EntityListener(this.passedEDH);
 	}
 
 	@Test
@@ -184,7 +184,7 @@ public class StatisticianEntityListenerTest {
 		// PROJECTILE DAMAGE
 
 		//EntityArrow.java: new EntityDamageByEntityEvent(projectile, damagee, EntityDamageEvent.DamageCause.PROJECTILE, 4);
-		for (Class<?> entityClass : StatisticianEntityListenerTest.arrowCreatureClasses) {
+		for (Class<?> entityClass : EntityListenerTest.arrowCreatureClasses) {
 			LivingEntity mockLivingEntity = (LivingEntity)Mockito.mock(entityClass);
 			Mockito.when(mockArrow.getShooter()).thenReturn(mockLivingEntity);
 			verifyEntityDamageByEntityEvent(mockArrow, mockPlayer, DamageCause.PROJECTILE, 4);
@@ -192,7 +192,7 @@ public class StatisticianEntityListenerTest {
 		Mockito.when(mockArrow.getShooter()).thenReturn(mockPlayer);
 		verifyEntityDamageByEntityEvent(mockArrow, mockPlayer, DamageCause.PROJECTILE, 4);
 
-		for (Class<?> creatureClass : StatisticianEntityListenerTest.creatureClasses) {
+		for (Class<?> creatureClass : EntityListenerTest.creatureClasses) {
 			Creature mockCreature = (Creature)Mockito.mock(creatureClass);
 			Mockito.when(mockArrow.getShooter()).thenReturn(mockPlayer);
 			verifyEntityDamageByEntityEvent(mockArrow, mockCreature, DamageCause.PROJECTILE, 4);
@@ -232,13 +232,13 @@ public class StatisticianEntityListenerTest {
 		//EntityHuman.java: new EntityDamageByEntityEvent(damager, damagee, EntityDamageEvent.DamageCause.ENTITY_ATTACK, i);
 		//EntityMonster.java: new EntityDamageByEntityEvent(this.getBukkitEntity(), damagee, EntityDamageEvent.DamageCause.ENTITY_ATTACK, this.damage);
 		//EntityWolf.java: new EntityDamageByEntityEvent(damager, damagee, EntityDamageEvent.DamageCause.ENTITY_ATTACK, b0);
-		for (Class<?> entityClass : StatisticianEntityListenerTest.meleeCreatureClasses) {
+		for (Class<?> entityClass : EntityListenerTest.meleeCreatureClasses) {
 			LivingEntity mockLivingEntity = (LivingEntity)Mockito.mock(entityClass);
 			verifyEntityDamageByEntityEvent(mockLivingEntity, mockPlayer, DamageCause.ENTITY_ATTACK, 1);
 		}
 		verifyEntityDamageByEntityEvent(mockPlayer, mockPlayer, DamageCause.ENTITY_ATTACK, 1);
 
-		for (Class<?> creatureClass : StatisticianEntityListenerTest.creatureClasses) {
+		for (Class<?> creatureClass : EntityListenerTest.creatureClasses) {
 			Creature mockCreature = (Creature)Mockito.mock(creatureClass);
 			verifyEntityDamageByEntityEvent(mockPlayer, mockCreature, DamageCause.ENTITY_ATTACK, 1);
 		}
@@ -246,7 +246,7 @@ public class StatisticianEntityListenerTest {
 
 
 		//Explosion.java: new EntityDamageByEntityEvent(this.source.getBukkitEntity(), damagee, EntityDamageEvent.DamageCause.ENTITY_EXPLOSION, damageDone);
-		for (Class<?> creatureClass : StatisticianEntityListenerTest.explosiveCreatureClasses) {
+		for (Class<?> creatureClass : EntityListenerTest.explosiveCreatureClasses) {
 			Creature mockCreature = (Creature)Mockito.mock(creatureClass);
 			verifyEntityDamageByEntityEvent(mockCreature, mockPlayer, DamageCause.ENTITY_EXPLOSION, 1);
 		}

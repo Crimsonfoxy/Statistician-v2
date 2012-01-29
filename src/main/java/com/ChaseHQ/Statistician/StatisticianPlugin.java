@@ -10,124 +10,134 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.ChaseHQ.Statistician.Config.Config;
-import com.ChaseHQ.Statistician.Database.StatDB;
+import com.ChaseHQ.Statistician.Database.Database;
 import com.ChaseHQ.Statistician.EventDataHandlers.EDHPlayer;
-import com.ChaseHQ.Statistician.Listeners.StatisticianBlockListener;
-import com.ChaseHQ.Statistician.Listeners.StatisticianCBInventoryListener;
-import com.ChaseHQ.Statistician.Listeners.StatisticianEntityListener;
-import com.ChaseHQ.Statistician.Listeners.StatisticianPlayerListener;
+import com.ChaseHQ.Statistician.Listeners.BlockListener;
+import com.ChaseHQ.Statistician.Listeners.EntityListener;
+import com.ChaseHQ.Statistician.Listeners.PlayerListener;
 import com.ChaseHQ.Statistician.Stats.PlayerData;
 
-public class StatisticianPlugin extends JavaPlugin { 
-	
-	private static StatisticianPlugin _singleton = null;
-	private ExecutorService executor;
-	private DataProcessor _dprocessor;
-	private PlayerData _playerData;
-	private EDHPlayer eventDataHandlerPlayer;
+public class StatisticianPlugin extends JavaPlugin {
+	private static StatisticianPlugin singleton = null;
+	private ExecutorService executorService;
+	private DataProcessor dataProcessor;
+	private PlayerData playerData;
+	private EDHPlayer edhPlayer;
 
-	@Override
-	public void onDisable() {
-		Log.ConsoleLog("Shutting down...");
-		
-		if (eventDataHandlerPlayer != null)
-			for (Player player : getServer().getOnlinePlayers()) {	
-				eventDataHandlerPlayer.PlayerQuit(player);
-			}
+	private PlayerListener playerListener;
+	private BlockListener blockListener;
+	private EntityListener entityListener;
 
-		if (_playerData != null)
-			_playerData._processData();
-		
-		StatDB db = StatDB.getDB();
-		if (db != null)
-			db.callStoredProcedure("pluginShutdown", null);
-		
-		_singleton = null;
-		
-		executor.shutdown();
+	//private InventoryListener inventoryListener;
+
+	public static StatisticianPlugin getInstance() {
+		return StatisticianPlugin.singleton;
 	}
 
 	@Override
 	public void onEnable() {
-		if (_singleton != null) {
-			return;
-		}
-		
-		_singleton = this;
-		
-		setNaggable(false);
-		
-		executor = Executors.newCachedThreadPool();
-		
+		if (StatisticianPlugin.singleton != null) return;
+
+		StatisticianPlugin.singleton = this;
+
+		this.setNaggable(false);
+
 		Log.ConsoleLog("Version " + Config.getStatisticianVersion() + " By ChaseHQ Starting Up...");
-		
+
 		// Make sure the configuration is accessible
 		if (Config.getConfig() == null) {
-			getPluginLoader().disablePlugin(this);
+			this.getPluginLoader().disablePlugin(this);
 			return;
 		}
-		
+
 		// Check mySQL Dependency
-		if (StatDB.getDB() == null) {
-			getPluginLoader().disablePlugin(this);
+		if (Database.getDB() == null) {
+			this.getPluginLoader().disablePlugin(this);
 			return;
 		}
-		
-		StatDB.getDB().callStoredProcedure("pluginStartup", null);
-		
-		eventDataHandlerPlayer = new EDHPlayer();
-		
+
+		Database.getDB().callStoredProcedure("pluginStartup", null);
+
+		this.executorService = Executors.newCachedThreadPool();
+
+		this.edhPlayer = new EDHPlayer();
+
+		this.playerData = new PlayerData();
+
+		this.dataProcessor = new DataProcessor();
+		this.dataProcessor.addProcessable(this.playerData);
+
+		new Timer(true).scheduleAtFixedRate(this.dataProcessor, Config.getConfig().getDBUpdateTime(), Config.getConfig().getDBUpdateTime());
+
 		// Setup Listeners
-		StatisticianPlayerListener _pl = new StatisticianPlayerListener(eventDataHandlerPlayer);
-		StatisticianBlockListener _bl = new StatisticianBlockListener(eventDataHandlerPlayer);
-		StatisticianEntityListener _el = new StatisticianEntityListener(eventDataHandlerPlayer);
-		
-		StatisticianCBInventoryListener _cbil = new StatisticianCBInventoryListener(eventDataHandlerPlayer);
-		
-		PluginManager pm = getServer().getPluginManager();
-		
-		// Release Build Register only used events
+		this.playerListener = new PlayerListener(this.edhPlayer);
+		this.blockListener = new BlockListener(this.edhPlayer);
+		this.entityListener = new EntityListener(this.edhPlayer);
+		//this.inventoryListener = new InventoryListener(this.edhPlayer);
+
+		this.registerEvents();
+
+		// This could be a reload so see if people are logged in
+		for (Player player : this.getServer().getOnlinePlayers()) {
+			this.edhPlayer.PlayerJoin(player);
+		}
+	}
+
+	@Override
+	public void onDisable() {
+		Log.ConsoleLog("Shutting down...");
+
+		if (this.edhPlayer != null) {
+			for (Player player : this.getServer().getOnlinePlayers()) {
+				this.edhPlayer.PlayerQuit(player);
+			}
+		}
+
+		if (this.playerData != null) {
+			this.playerData._processData();
+		}
+
+		Database db = Database.getDB();
+		if (db != null) {
+			db.callStoredProcedure("pluginShutdown", null);
+		}
+
+		StatisticianPlugin.singleton = null;
+
+		if (this.executorService != null) {
+			this.executorService.shutdown();
+		}
+	}
+
+	private void registerEvents() {
+		PluginManager pm = this.getServer().getPluginManager();
+
 		// Block Listeners
-		pm.registerEvent(Event.Type.BLOCK_BREAK, _bl, Event.Priority.Normal, this);
-		pm.registerEvent(Event.Type.BLOCK_PLACE, _bl, Event.Priority.Normal, this);
+		pm.registerEvent(Event.Type.BLOCK_BREAK, this.blockListener, Event.Priority.Normal, this);
+		pm.registerEvent(Event.Type.BLOCK_PLACE, this.blockListener, Event.Priority.Normal, this);
+
 		// Entity Listeners
-		pm.registerEvent(Event.Type.ENTITY_DEATH, _el, Event.Priority.Normal, this);
+		pm.registerEvent(Event.Type.ENTITY_DEATH, this.entityListener, Event.Priority.Normal, this);
+
 		// Player Listeners
-		pm.registerEvent(Event.Type.PLAYER_JOIN, _pl, Event.Priority.Normal, this);
-		pm.registerEvent(Event.Type.PLAYER_QUIT, _pl, Event.Priority.Normal, this);
-		pm.registerEvent(Event.Type.PLAYER_MOVE, _pl, Event.Priority.Normal, this);
-		pm.registerEvent(Event.Type.PLAYER_PICKUP_ITEM, _pl, Event.Priority.Normal, this);
-		pm.registerEvent(Event.Type.PLAYER_DROP_ITEM, _pl, Event.Priority.Normal, this);
+		pm.registerEvent(Event.Type.PLAYER_JOIN, this.playerListener, Event.Priority.Normal, this);
+		pm.registerEvent(Event.Type.PLAYER_QUIT, this.playerListener, Event.Priority.Normal, this);
+		pm.registerEvent(Event.Type.PLAYER_MOVE, this.playerListener, Event.Priority.Normal, this);
+		pm.registerEvent(Event.Type.PLAYER_PICKUP_ITEM, this.playerListener, Event.Priority.Normal, this);
+		pm.registerEvent(Event.Type.PLAYER_DROP_ITEM, this.playerListener, Event.Priority.Normal, this);
 
 		// TODO: Register Inventory Craft Event
-		
-		_playerData = new PlayerData();
-		
-		_dprocessor = new DataProcessor();
-		_dprocessor.addProcessable(_playerData);
-		
-		new Timer(true).scheduleAtFixedRate(_dprocessor, Config.getConfig().get_databaseUpdateTime() * 1000, Config.getConfig().get_databaseUpdateTime() * 1000);
-		
-		// This could be a reload so see if people are logged in
-		for (Player player : getServer().getOnlinePlayers()) {
-			eventDataHandlerPlayer.PlayerJoin(player);
-		}
 	}
-	
+
 	public ExecutorService getExecutor() {
-		return executor;
+		return this.executorService;
 	}
-	
-	public static StatisticianPlugin getEnabledPlugin() {
-		return _singleton;
-	}
-	
+
 	public PlayerData getPlayerData() {
-		return _playerData;
+		return this.playerData;
 	}
-	
+
 	public boolean permissionToRecordStat(Player player) {
 		return !player.hasPermission("statistician.ignore");
 	}
-
 }

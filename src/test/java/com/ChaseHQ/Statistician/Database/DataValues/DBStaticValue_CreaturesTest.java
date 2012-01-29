@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import org.mockito.Mockito;
 
-public class StatDBStaticValue_CreaturesTest {
+public class DBStaticValue_CreaturesTest {
 	@Test
 	public void testMapCreature() {
 		// Verify we support all of the creature's
@@ -21,7 +21,7 @@ public class StatDBStaticValue_CreaturesTest {
 					continue;
 			}
 			Creature mockCreature = (Creature)Mockito.mock(creatureType.getEntityClass());
-			Assert.assertNotSame(StatDBStaticValue_Creatures.NONE, StatDBStaticValue_Creatures.mapCreature(mockCreature));
+			Assert.assertNotSame(DBStaticValue_Creatures.NONE, DBStaticValue_Creatures.mapCreature(mockCreature));
 		}
 	}
 }

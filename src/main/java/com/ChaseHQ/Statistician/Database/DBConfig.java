@@ -10,45 +10,44 @@ import java.sql.SQLException;
 import com.ChaseHQ.Statistician.Log;
 import com.ChaseHQ.Statistician.Config.Config;
 
-public class StatDBConfig {
-	
-	public StatDBConfig(Connection connection) throws StatDBConnectFail {
+public class DBConfig {
+	public DBConfig(Connection connection) throws DBConnectFail {
 		// Load the config
-		LoadConfigSetupDB(connection);
+		this.LoadConfigSetupDB(connection);
 	}
-	
-	private void LoadConfigSetupDB(Connection connection) throws StatDBConnectFail {
-			int curDBVersion = 0;
-			if ((curDBVersion = getDBVersion(connection)) != Config.DBVersion) {
-				for (int x = curDBVersion; x < Config.DBVersion; x++) {
-					patchDB(x+1,connection);
-				}
+
+	private void LoadConfigSetupDB(Connection connection) throws DBConnectFail {
+		int curDBVersion = 0;
+		if ((curDBVersion = this.getDBVersion(connection)) != Config.getDBVersion()) {
+			for (int x = curDBVersion; x < Config.getDBVersion(); x++) {
+				this.patchDB(x + 1, connection);
 			}
+		}
 	}
-	
-	private void patchDB(int versionPatch, Connection connection) throws StatDBConnectFail {
-		ScriptRunner sr = new ScriptRunner(connection,false,true);
+
+	private void patchDB(int versionPatch, Connection connection) throws DBConnectFail {
+		ScriptRunner sr = new ScriptRunner(connection, false, true);
 		String SQLPatchFile = new String();
 
 		Log.ConsoleLog("Patching Database To Version " + versionPatch + ".");
-		SQLPatchFile = "stats_v"+ versionPatch +".sql";
+		SQLPatchFile = "stats_v" + versionPatch + ".sql";
 
-		InputStream is = getClass().getClassLoader().getResourceAsStream("SQLPatches/" + SQLPatchFile);
+		InputStream is = this.getClass().getClassLoader().getResourceAsStream("SQLPatches/" + SQLPatchFile);
 		if (is == null) {
 			Log.ConsoleLog("Could Not Load Database Patch File. Is it removed from the Jar?!");
-			throw new StatDBConnectFail();
+			throw new DBConnectFail();
 		}
 		try {
 			sr.runScript(new InputStreamReader(is));
 		} catch (IOException e) {
 			Log.ConsoleLog("Critical Error, There is a problem with the internal SQL file.");
-			throw new StatDBConnectFail();
+			throw new DBConnectFail();
 		} catch (SQLException e) {
 			Log.ConsoleLog("Critical Error, There was an error in executing the internal SQL file.");
 		}
 		Log.ConsoleLog("Database Patch Complete. DBVersion: " + versionPatch);
 	}
-	
+
 	private int getDBVersion(Connection connection) {
 		int dbVersion = 0;
 		try {

@@ -1,117 +1,111 @@
 package com.ChaseHQ.Statistician.Config;
 
-import java.io.IOException;
-
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.PluginDescriptionFile;
 
-import com.ChaseHQ.Statistician.Log;
 import com.ChaseHQ.Statistician.StatisticianPlugin;
 
 // *NOTE Config class must not be used before the plugin's onEnable is called.
 public class Config {
-	public static String _statisticianVersion;
-	public static final Integer DBVersion = 7;
-	public static String _logPrefix;
-	
-	private FileConfiguration _config;
-	
-	private String _dbAddress = "localhost";
-	private int _dbPort = 3306;
-	private String _dbName = "mc_statistician";
-	private String _dbUsername = "mc_statistician";
-	private String _dbPassword = "mc_statistician";
-	private int _databaseUpdateTime = 120;
-	
-	private static Config _internalConfig = null;
+	private static final int _dbVersion = 7;
 
-	static {
-		StatisticianPlugin plugin = StatisticianPlugin.getEnabledPlugin();
-		PluginDescriptionFile pdf = plugin.getDescription();
-		_statisticianVersion = pdf.getVersion();
-		_logPrefix = "[" + pdf.getName() + "]";
-	}
-	
+	private static Config instance = null;
+
+	private FileConfiguration config;
+
+	private String dbAddress;
+	private int dbPort;
+	private String dbName;
+	private String dbUsername;
+	private String dbPassword;
+	private int dbUpdateTime;
+
 	public static Config getConfig() {
-		if (_internalConfig == null) {
-			// Instantiate
-			try {
-				_internalConfig = new Config();
-			} catch (IOException e) {
-				Log.ConsoleLog("Could not load/write Database Config file. Fatal error.");
-				return null;
-			}
+		if (Config.instance == null) {
+			Config.instance = new Config();
 		}
-		
-		return _internalConfig;
+
+		return Config.instance;
 	}
 
+	/**
+	 * @return The current version
+	 */
 	public static String getStatisticianVersion() {
-		return _statisticianVersion;
+		return StatisticianPlugin.getInstance().getDescription().getVersion();
 	}
 
+	/**
+	 * @return The log prefix
+	 */
 	public static String getLogPrefix() {
-		return _logPrefix;
+		return "[" + StatisticianPlugin.getInstance().getDescription().getName() + "]";
 	}
-	
-	public Config() throws IOException {
-		if (_internalConfig != null)
+
+	/**
+	 * @return The database version
+	 */
+	public static int getDBVersion() {
+		return Config._dbVersion;
+	}
+
+	public Config() {
+		if (Config.instance != null)
 			return;
 
-		StatisticianPlugin plugin = StatisticianPlugin.getEnabledPlugin();
+		StatisticianPlugin plugin = StatisticianPlugin.getInstance();
 
-		_config = plugin.getConfig();
-		_config.options().copyDefaults(true);
-		_dbAddress = _config.getString("database_address");
-		_dbPort = _config.getInt("database_port");
-		_dbName = _config.getString("database_name");
-		_dbUsername = _config.getString("database_username");
-		_dbPassword = _config.getString("database_password");
-		_databaseUpdateTime = _config.getInt("database_update_time");
+		this.config = plugin.getConfig();
+		this.config.options().copyDefaults(true);
+
+		this.dbAddress = this.config.getString("database_address");
+		this.dbPort = this.config.getInt("database_port");
+		this.dbName = this.config.getString("database_name");
+		this.dbUsername = this.config.getString("database_username");
+		this.dbPassword = this.config.getString("database_password");
+		this.dbUpdateTime = this.config.getInt("database_update_time");
 
 		plugin.saveConfig();
 	}
 
 	/**
-	 * @return the _dbAddress
+	 * @return The Database address
 	 */
-	public String get_dbAddress() {
-		return _dbAddress;
+	public String getDBAddress() {
+		return this.dbAddress;
 	}
 
 	/**
-	 * @return the _dbPort
+	 * @return The Database port
 	 */
-	public int get_dbPort() {
-		return _dbPort;
-	}
-	
-	/**
-	 * @return the _databaseUpdateTime
-	 */
-	public int get_databaseUpdateTime() {
-		return _databaseUpdateTime;
+	public int getDBPort() {
+		return this.dbPort;
 	}
 
 	/**
-	 * @return the _dbName
+	 * @return The Database update time, in milliseconds.
 	 */
-	public String get_dbName() {
-		return _dbName;
+	public int getDBUpdateTime() {
+		return this.dbUpdateTime * 1000;
 	}
 
 	/**
-	 * @return the _dbUsername
+	 * @return The Database table name
 	 */
-	public String get_dbUsername() {
-		return _dbUsername;
+	public String getDBName() {
+		return this.dbName;
 	}
 
 	/**
-	 * @return the _dbPassword
+	 * @return The Database username
 	 */
-	public String get_dbPassword() {
-		return _dbPassword;
+	public String getDBUsername() {
+		return this.dbUsername;
 	}
-	
+
+	/**
+	 * @return The Database password
+	 */
+	public String getDBPassword() {
+		return this.dbPassword;
+	}
 }

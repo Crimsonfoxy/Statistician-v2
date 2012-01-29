@@ -5,57 +5,58 @@ import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Pig;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.ChaseHQ.Statistician.EventDataHandlers.EDHPlayer;
 
-public class StatisticianPlayerListener extends PlayerListener {
+public class PlayerListener extends org.bukkit.event.player.PlayerListener {
 	private EDHPlayer edhPlayer;
-	
-	public StatisticianPlayerListener(EDHPlayer passedEDH) {
-		edhPlayer = passedEDH;
+
+	public PlayerListener(EDHPlayer passedEDH) {
+		this.edhPlayer = passedEDH;
 	}
-	
+
 	@Override
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		edhPlayer.PlayerJoin(event.getPlayer());
+		this.edhPlayer.PlayerJoin(event.getPlayer());
 	}
-	
+
 	@Override
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		edhPlayer.PlayerQuit(event.getPlayer());
+		this.edhPlayer.PlayerQuit(event.getPlayer());
 	}
-	
+
 	@Override
 	public void onPlayerMove(PlayerMoveEvent event) {
 		boolean isInMinecart = false;
 		boolean isOnPig = false;
 		boolean isInBoat = false;
-		
+
 		if (event.getPlayer().isInsideVehicle())
 			if (event.getPlayer().getVehicle() != null) {
-				if (event.getPlayer().getVehicle() instanceof Minecart)
+				if (event.getPlayer().getVehicle() instanceof Minecart) {
 					isInMinecart = true;
-				if (event.getPlayer().getVehicle() instanceof Pig)
+				}
+				if (event.getPlayer().getVehicle() instanceof Pig) {
 					isOnPig = true;
-				if (event.getPlayer().getVehicle() instanceof Boat)
+				}
+				if (event.getPlayer().getVehicle() instanceof Boat) {
 					isInBoat = true;
+				}
 			}
 
-		edhPlayer.PlayerMove(event.getPlayer(), isInMinecart, isOnPig, isInBoat);
+		this.edhPlayer.PlayerMove(event.getPlayer(), isInMinecart, isOnPig, isInBoat);
 	}
-	
+
 	@Override
 	public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-		edhPlayer.PlayerPickedUpItem(event.getPlayer(), event.getItem().getItemStack().getTypeId(), event.getItem().getItemStack().getAmount());
+		this.edhPlayer.PlayerPickedUpItem(event.getPlayer(), event.getItem().getItemStack().getTypeId(), event.getItem().getItemStack().getAmount());
 	}
-	
+
 	@Override
 	public void onPlayerDropItem(PlayerDropItemEvent event) {
-		edhPlayer.PlayerDroppedItem(event.getPlayer(), event.getItemDrop().getItemStack().getTypeId(), event.getItemDrop().getItemStack().getAmount());
+		this.edhPlayer.PlayerDroppedItem(event.getPlayer(), event.getItemDrop().getItemStack().getTypeId(), event.getItemDrop().getItemStack().getAmount());
 	}
-	
 }

@@ -29,13 +29,16 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Tool to run database scripts
  */
 public class ScriptRunner {
-
 	private static final String DEFAULT_DELIMITER = ";";
 
 	private Connection connection;
@@ -46,7 +49,7 @@ public class ScriptRunner {
 	private PrintWriter logWriter = new PrintWriter(System.out);
 	private PrintWriter errorLogWriter = new PrintWriter(System.err);
 
-	private String delimiter = DEFAULT_DELIMITER;
+	private String delimiter = ScriptRunner.DEFAULT_DELIMITER;
 	private boolean fullLineDelimiter = false;
 
 	/**
@@ -92,14 +95,14 @@ public class ScriptRunner {
 	 */
 	public void runScript(Reader reader) throws IOException, SQLException {
 		try {
-			boolean originalAutoCommit = connection.getAutoCommit();
+			boolean originalAutoCommit = this.connection.getAutoCommit();
 			try {
 				if (originalAutoCommit != this.autoCommit) {
-					connection.setAutoCommit(this.autoCommit);
+					this.connection.setAutoCommit(this.autoCommit);
 				}
-				runScript(connection, reader);
+				this.runScript(this.connection, reader);
 			} finally {
-				connection.setAutoCommit(originalAutoCommit);
+				this.connection.setAutoCommit(originalAutoCommit);
 			}
 		} catch (IOException e) {
 			throw e;
@@ -137,37 +140,38 @@ public class ScriptRunner {
 				if (trimmedLine.startsWith("--")) {
 					//println(trimmedLine);
 				} else if (trimmedLine.toLowerCase().startsWith("delimiter")) {
-					if (trimmedLine.length() > 10 )
-					delimiter = trimmedLine.substring(10);
+					if (trimmedLine.length() > 10) {
+						this.delimiter = trimmedLine.substring(10);
+					}
 				} else if (trimmedLine.length() < 1
 						|| trimmedLine.startsWith("//")) {
 					// Do nothing
 				} else if (trimmedLine.length() < 1
 						|| trimmedLine.startsWith("--")) {
 					// Do nothing
-				} else if (!fullLineDelimiter
-						&& trimmedLine.endsWith(getDelimiter())
-						|| fullLineDelimiter
-						&& trimmedLine.equals(getDelimiter())) {
+				} else if (!this.fullLineDelimiter
+						&& trimmedLine.endsWith(this.getDelimiter())
+						|| this.fullLineDelimiter
+						&& trimmedLine.equals(this.getDelimiter())) {
 					command.append(line.substring(0, line
-							.lastIndexOf(getDelimiter())));
+							.lastIndexOf(this.getDelimiter())));
 					command.append(" ");
 					Statement statement = conn.createStatement();
 
 					boolean hasResults = false;
-					if (stopOnError) {
+					if (this.stopOnError) {
 						hasResults = statement.execute(command.toString());
 					} else {
 						try {
 							statement.execute(command.toString());
 						} catch (SQLException e) {
 							e.fillInStackTrace();
-							printlnError("Error executing: " + command);
-							printlnError(e);
+							this.printlnError("Error executing: " + command);
+							this.printlnError(e);
 						}
 					}
 
-					if (autoCommit && !conn.getAutoCommit()) {
+					if (this.autoCommit && !conn.getAutoCommit()) {
 						conn.commit();
 					}
 
@@ -175,12 +179,10 @@ public class ScriptRunner {
 					if (hasResults && rs != null) {
 						ResultSetMetaData md = rs.getMetaData();
 						int cols = md.getColumnCount();
-						for (int i = 0; i < cols; i++) {
-						}
+						for (int i = 0; i < cols; i++) {}
 						//println("");
 						while (rs.next()) {
-							for (int i = 0; i < cols; i++) {
-							}
+							for (int i = 0; i < cols; i++) {}
 							//println("");
 						}
 					}
@@ -197,41 +199,41 @@ public class ScriptRunner {
 					command.append(" ");
 				}
 			}
-			if (!autoCommit) {
+			if (!this.autoCommit) {
 				conn.commit();
 			}
 		} catch (SQLException e) {
 			e.fillInStackTrace();
-			printlnError("Error executing: " + command);
-			printlnError(e);
+			this.printlnError("Error executing: " + command);
+			this.printlnError(e);
 			throw e;
 		} catch (IOException e) {
 			e.fillInStackTrace();
-			printlnError("Error executing: " + command);
-			printlnError(e);
+			this.printlnError("Error executing: " + command);
+			this.printlnError(e);
 			throw e;
 		} finally {
 			conn.rollback();
-			flush();
+			this.flush();
 		}
 	}
 
 	private String getDelimiter() {
-		return delimiter;
+		return this.delimiter;
 	}
 
 	private void printlnError(Object o) {
-		if (errorLogWriter != null) {
-			errorLogWriter.println(o);
+		if (this.errorLogWriter != null) {
+			this.errorLogWriter.println(o);
 		}
 	}
 
 	private void flush() {
-		if (logWriter != null) {
-			logWriter.flush();
+		if (this.logWriter != null) {
+			this.logWriter.flush();
 		}
-		if (errorLogWriter != null) {
-			errorLogWriter.flush();
+		if (this.errorLogWriter != null) {
+			this.errorLogWriter.flush();
 		}
 	}
 }
