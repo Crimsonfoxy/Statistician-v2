@@ -167,10 +167,16 @@ public class Database {
 				InputStream is = this.getClass().getClassLoader().getResourceAsStream("SQLPatches/stats_v" + version + ".sql");
 				if (is == null) throw new DBConnectFail("Could not load database patch v" + version + ".");
 
-				ScriptRunner sr = new ScriptRunner(this.connection, false, true);
+				ScriptRunner sr = new ScriptRunner(this.connection);
+				sr.setLogWriter(null);
+				sr.setErrorLogWriter(null);
+				sr.setAutoCommit(false);
+				sr.setStopOnError(true);
+				sr.setSendFullScript(false);
+				sr.setRemoveCRs(true);
 				try {
 					sr.runScript(new InputStreamReader(is));
-				} catch (Exception e) {
+				} catch (RuntimeSqlException e) {
 					throw new DBConnectFail("An error occured while executing the database patch v" + version + ".", e);
 				}
 			}
