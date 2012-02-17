@@ -5,6 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Boat;
+import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Pig;
+import org.bukkit.entity.Vehicle;
 
 import com.ChaseHQ.Statistician.Database.DBSynchDataGetSet;
 import com.ChaseHQ.Statistician.Database.DataValues.DBDataValues_Players;
@@ -52,7 +56,8 @@ public class PlayerData implements IProcessable {
 		ip.BlockDestroyed.put(blockID, pbb);
 	}
 
-	public void incrementStepsTaken(String UUID, Location loc, boolean inMinecart, boolean onPig, boolean inBoat) {
+	//public void incrementStepsTaken(String UUID, Location loc, boolean inMinecart, boolean onPig, boolean inBoat) {
+	public void incrementStepsTaken(String UUID, Location loc, Class<? extends Vehicle> vehicleType) {
 		_InternalPlayer ip = this._watchedPlayers.get(UUID);
 		if (ip == null) //Log.ConsoleLog("Tried to set data values on player that was not added to watch '" + UUID + "'");
 		return;
@@ -60,14 +65,16 @@ public class PlayerData implements IProcessable {
 			int newDist = (int)ip.LastLocation.distance(loc);
 			if (newDist > 0) {
 				ip.Distance += newDist;
-				if (inMinecart) {
-					ip.DistanceInMinecart += newDist;
-				}
-				if (onPig) {
-					ip.DistanceOnPig += newDist;
-				}
-				if (inBoat) {
-					ip.DistanceInBoat += newDist;
+				if (vehicleType != null) {
+					if (Minecart.class.isAssignableFrom(vehicleType)) {
+						ip.DistanceInMinecart += newDist;
+					}
+					if (Pig.class.isAssignableFrom(vehicleType)) {
+						ip.DistanceOnPig += newDist;
+					}
+					if (Boat.class.isAssignableFrom(vehicleType)) {
+						ip.DistanceInBoat += newDist;
+					}
 				}
 				ip.LastLocation = loc;
 			}

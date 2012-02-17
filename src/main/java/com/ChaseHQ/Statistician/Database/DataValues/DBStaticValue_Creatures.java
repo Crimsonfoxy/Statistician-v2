@@ -59,15 +59,15 @@ public enum DBStaticValue_Creatures implements IStaticValue {
 	SNOWMAN(27),
 	VILLAGER(28);
 
-	private final Integer _id;
+	private final Integer id;
 
 	private DBStaticValue_Creatures(Integer id) {
-		this._id = id;
+		this.id = id;
 	}
 
 	@Override
 	public Integer getID() {
-		return this._id;
+		return this.id;
 	}
 
 	public static DBStaticValue_Creatures mapCreature(Creature creature) {

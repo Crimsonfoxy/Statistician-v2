@@ -18,17 +18,19 @@ public enum DBStaticValue_KillTypes implements IStaticValue {
 	ENTITY_ATTACK(12),
 	CUSTOM(13),
 	SUICIDE(14),
-	STARVATION(15);
+	STARVATION(15),
+	POISON(16),
+	MAGIC(17);
 
-	private final Integer _id;
+	private final Integer id;
 
 	private DBStaticValue_KillTypes(Integer id) {
-		this._id = id;
+		this.id = id;
 	}
 
 	@Override
 	public Integer getID() {
-		return this._id;
+		return this.id;
 	}
 
 	public static DBStaticValue_KillTypes mapDamageCause(DamageCause cause) {
@@ -64,6 +66,10 @@ public enum DBStaticValue_KillTypes implements IStaticValue {
 				return DBStaticValue_KillTypes.SUICIDE;
 			case STARVATION:
 				return DBStaticValue_KillTypes.STARVATION;
+			case POISON:
+				return DBStaticValue_KillTypes.POISON;
+			case MAGIC:
+				return DBStaticValue_KillTypes.MAGIC;
 		}
 
 		return DBStaticValue_KillTypes.NONE;

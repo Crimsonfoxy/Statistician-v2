@@ -7,15 +7,15 @@ public enum DBStaticValue_Projectiles implements IStaticValue {
 	NONE(0),
 	ARROW(1);
 
-	private final Integer _id;
+	private final Integer id;
 
 	private DBStaticValue_Projectiles(Integer id) {
-		this._id = id;
+		this.id = id;
 	}
 
 	@Override
 	public Integer getID() {
-		return this._id;
+		return this.id;
 	}
 
 	public static DBStaticValue_Projectiles mapProjectile(Entity projectile) {

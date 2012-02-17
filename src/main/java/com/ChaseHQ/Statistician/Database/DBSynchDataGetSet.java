@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.ChaseHQ.Statistician.StatisticianPlugin;
 import com.ChaseHQ.Statistician.Database.DataValues.DBDataValues_Players;
 import com.ChaseHQ.Statistician.Database.DataValues.DataStores;
 import com.ChaseHQ.Statistician.Database.DataValues.IDataValues;
@@ -14,7 +15,7 @@ import com.ChaseHQ.Statistician.Stats.KillTag;
 public abstract class DBSynchDataGetSet {
 	public static String getValue(DataStores dataStore, IDataValues dataStoreValue, IDataValues controlStoreValue, String valueEquals) {
 		List<Map<String, String>> results =
-				Database.getDB().executeSynchQuery("SELECT " + dataStoreValue.getColumnName() + " FROM " +
+				StatisticianPlugin.getInstance().getDB().executeSynchQuery("SELECT " + dataStoreValue.getColumnName() + " FROM " +
 						dataStore.getTableName() + " WHERE " + controlStoreValue.getColumnName() +
 						" = '" + valueEquals + "' LIMIT 1");
 		if (results != null) {
@@ -27,7 +28,7 @@ public abstract class DBSynchDataGetSet {
 
 	public static List<String> getValues(DataStores dataStore, IDataValues dataStoreValue, IDataValues controlStoreValue, String valueEquals) {
 		List<Map<String, String>> results =
-				Database.getDB().executeSynchQuery("SELECT " + dataStoreValue.getColumnName() + " FROM " +
+				StatisticianPlugin.getInstance().getDB().executeSynchQuery("SELECT " + dataStoreValue.getColumnName() + " FROM " +
 						dataStore.getTableName() + " WHERE " + controlStoreValue.getColumnName() +
 						" = '" + valueEquals + "'");
 
@@ -47,30 +48,30 @@ public abstract class DBSynchDataGetSet {
 	}
 
 	public static List<Map<String, String>> getValues(DataStores dataStore, IDataValues controlStoreValue, String valueEquals) {
-		return Database.getDB().executeSynchQuery("SELECT * FROM " + dataStore.getTableName() +
+		return StatisticianPlugin.getInstance().getDB().executeSynchQuery("SELECT * FROM " + dataStore.getTableName() +
 				" WHERE " + controlStoreValue.getColumnName() + " = '" + valueEquals + "'");
 	}
 
 	public static List<Map<String, String>> customQuery(String customQuery) {
-		return Database.getDB().executeSynchQuery(customQuery);
+		return StatisticianPlugin.getInstance().getDB().executeSynchQuery(customQuery);
 	}
 
 	public static boolean customUpdateQuery(String customQuery) {
-		return Database.getDB().executeSynchUpdate(customQuery);
+		return StatisticianPlugin.getInstance().getDB().executeSynchUpdate(customQuery);
 	}
 
 	public static boolean setValue(DataStores dataStore, IDataValues storeValue, String value, IDataValues controlStoreValue, String valueEquals) {
-		return Database.getDB().executeSynchUpdate("UPDATE " + dataStore.getTableName() + " SET " + storeValue.getColumnName()
+		return StatisticianPlugin.getInstance().getDB().executeSynchUpdate("UPDATE " + dataStore.getTableName() + " SET " + storeValue.getColumnName()
 				+ " = '" + value + "' WHERE " + controlStoreValue.getColumnName() + " = '" + valueEquals + "'");
 	}
 
 	public static boolean incrementValue(DataStores dataStore, IDataValues storeValue, Integer byVal, IDataValues controlStoreValue, String valueEquals, IDataValues controlStoreValue2, String valueEquals2) {
-		return Database.getDB().executeSynchUpdate("UPDATE " + dataStore.getTableName() + " SET " + storeValue.getColumnName()
+		return StatisticianPlugin.getInstance().getDB().executeSynchUpdate("UPDATE " + dataStore.getTableName() + " SET " + storeValue.getColumnName()
 				+ " = " + storeValue.getColumnName() + " + " + byVal + " WHERE " + controlStoreValue.getColumnName() + " = '" + valueEquals + "'" + " AND " + controlStoreValue2.getColumnName() + " = '" + valueEquals2 + "'");
 	}
 
 	public static boolean incrementValue(DataStores dataStore, IDataValues storeValue, Integer byVal, IDataValues controlStoreValue, String valueEquals) {
-		return Database.getDB().executeSynchUpdate("UPDATE " + dataStore.getTableName() + " SET " + storeValue.getColumnName()
+		return StatisticianPlugin.getInstance().getDB().executeSynchUpdate("UPDATE " + dataStore.getTableName() + " SET " + storeValue.getColumnName()
 				+ " = " + storeValue.getColumnName() + " + " + byVal + " WHERE " + controlStoreValue.getColumnName() + " = '" + valueEquals + "'");
 	}
 
@@ -83,12 +84,12 @@ public abstract class DBSynchDataGetSet {
 	}
 
 	public static boolean decrementValue(DataStores dataStore, IDataValues storeValue, Integer byVal, IDataValues controlStoreValue, String valueEquals) {
-		return Database.getDB().executeSynchUpdate("UPDATE " + dataStore.getTableName() + " SET " + storeValue.getColumnName()
+		return StatisticianPlugin.getInstance().getDB().executeSynchUpdate("UPDATE " + dataStore.getTableName() + " SET " + storeValue.getColumnName()
 				+ " = " + storeValue.getColumnName() + " - " + byVal + " WHERE " + controlStoreValue.getColumnName() + " = '" + valueEquals + "'");
 	}
 
 	public static boolean decrementValue(DataStores dataStore, IDataValues storeValue, Integer byVal, IDataValues controlStoreValue, String valueEquals, IDataValues controlStoreValue2, String valueEquals2) {
-		return Database.getDB().executeSynchUpdate("UPDATE " + dataStore.getTableName() + " SET " + storeValue.getColumnName()
+		return StatisticianPlugin.getInstance().getDB().executeSynchUpdate("UPDATE " + dataStore.getTableName() + " SET " + storeValue.getColumnName()
 				+ " = " + storeValue.getColumnName() + " - " + byVal + " WHERE " + controlStoreValue.getColumnName() + " = '" + valueEquals + "'" + " AND " + controlStoreValue2.getColumnName() + " = '" + valueEquals2 + "'");
 	}
 
@@ -114,7 +115,7 @@ public abstract class DBSynchDataGetSet {
 
 		Query += " WHERE " + controlStoreValue.getColumnName() + " = '" + valueEquals + "'";
 
-		return Database.getDB().executeSynchUpdate(Query);
+		return StatisticianPlugin.getInstance().getDB().executeSynchUpdate(Query);
 	}
 
 	public static boolean batchIncrementDecrement(DataStores dataStore, IDataValues storeValue, List<Map<IDataValues, Integer>> batchValues, IDataValues controlStoreValue, String valueEquals) {
@@ -135,7 +136,7 @@ public abstract class DBSynchDataGetSet {
 
 		Query += " WHERE " + controlStoreValue.getColumnName() + " = '" + valueEquals + "'";
 
-		return Database.getDB().executeSynchUpdate(Query);
+		return StatisticianPlugin.getInstance().getDB().executeSynchUpdate(Query);
 	}
 
 	public static boolean isPlayerInDB(String UUID) {
@@ -149,7 +150,7 @@ public abstract class DBSynchDataGetSet {
 		vars.add(UUID);
 		vars.add(blockID.toString());
 		vars.add(numDestroyed.toString());
-		return Database.getDB().callStoredProcedure("incrementBlockDestroy", vars);
+		return StatisticianPlugin.getInstance().getDB().callStoredProcedure("incrementBlockDestroy", vars);
 	}
 
 	public static boolean incrementBlockPlaced(String UUID, Integer blockID, Integer numPlaced) {
@@ -157,7 +158,7 @@ public abstract class DBSynchDataGetSet {
 		vars.add(UUID);
 		vars.add(blockID.toString());
 		vars.add(numPlaced.toString());
-		return Database.getDB().callStoredProcedure("incrementBlockPlaced", vars);
+		return StatisticianPlugin.getInstance().getDB().callStoredProcedure("incrementBlockPlaced", vars);
 	}
 
 	public static boolean playerCreate(String UUID, String PlayerName) {
@@ -165,19 +166,19 @@ public abstract class DBSynchDataGetSet {
 		List<String> vars = new ArrayList<String>();
 		vars.add(UUID);
 		vars.add(PlayerName);
-		return Database.getDB().callStoredProcedure("newPlayer", vars);
+		return StatisticianPlugin.getInstance().getDB().callStoredProcedure("newPlayer", vars);
 	}
 
 	public static boolean playerLogin(String UUID) {
 		List<String> vars = new ArrayList<String>();
 		vars.add(UUID);
-		return Database.getDB().callStoredProcedure("loginPlayer", vars);
+		return StatisticianPlugin.getInstance().getDB().callStoredProcedure("loginPlayer", vars);
 	}
 
 	public static boolean playerLogout(String UUID) {
 		List<String> vars = new ArrayList<String>();
 		vars.add(UUID);
-		return Database.getDB().callStoredProcedure("logoutPlayer", vars);
+		return StatisticianPlugin.getInstance().getDB().callStoredProcedure("logoutPlayer", vars);
 	}
 
 	public static boolean newKill(KillTag kt) {
@@ -189,7 +190,7 @@ public abstract class DBSynchDataGetSet {
 		vars.add(kt.KillProjectile.getID().toString());
 		vars.add(kt.KilledBy_UUID);
 		vars.add(kt.Killed_UUID);
-		return Database.getDB().callStoredProcedure("newKill", vars);
+		return StatisticianPlugin.getInstance().getDB().callStoredProcedure("newKill", vars);
 	}
 
 	public static boolean incrementItemPickup(String UUID, Integer itemID, Integer numPickedUp) {
@@ -197,7 +198,7 @@ public abstract class DBSynchDataGetSet {
 		vars.add(UUID);
 		vars.add(itemID.toString());
 		vars.add(numPickedUp.toString());
-		return Database.getDB().callStoredProcedure("incrementPickedup", vars);
+		return StatisticianPlugin.getInstance().getDB().callStoredProcedure("incrementPickedup", vars);
 	}
 
 	public static boolean incrementItemDrop(String UUID, Integer itemID, Integer numDropped) {
@@ -205,6 +206,6 @@ public abstract class DBSynchDataGetSet {
 		vars.add(UUID);
 		vars.add(itemID.toString());
 		vars.add(numDropped.toString());
-		return Database.getDB().callStoredProcedure("incrementDropped", vars);
+		return StatisticianPlugin.getInstance().getDB().callStoredProcedure("incrementDropped", vars);
 	}
 }

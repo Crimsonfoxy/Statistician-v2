@@ -1,5 +1,7 @@
 package com.ChaseHQ.Statistician.Database;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -7,11 +9,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.ChaseHQ.Statistician.Log;
+import com.ChaseHQ.Statistician.StatisticianPlugin;
 import com.ChaseHQ.Statistician.Config.Config;
 import com.ChaseHQ.Statistician.Database.DataValues.DataValues_Config;
 
@@ -20,98 +21,107 @@ public class Database {
 
 	private Connection connection = null;
 
-	static public Database getDB() {
-		if (Database._singletonDB == null) {
-			try {
-				new Database();
-			} catch (ClassNotFoundException e) {
-				Log.ConsoleLog("Critical Error, mySQL Driver not found. Is this the latest version of CraftBukkit?!");
-			} catch (DBConnectFail e) {
-				Log.ConsoleLog("Critical Error, could not connect to mySQL. Is the database Available? Check config file and try again.");
-			}
-		}
-
-		return Database._singletonDB;
-	}
-
 	public Database() throws ClassNotFoundException, DBConnectFail {
 		if (Database._singletonDB != null) return;
 
 		// Connect To DB And Hold info
 		Class.forName("com.mysql.jdbc.Driver");
 		this.ConnectToDB();
-		new DBConfig(this.connection);
+		this.patchDB();
 
 		Database._singletonDB = this;
 
-		DataValues_Config.refreshConfigValues();
+		DataValues_Config.refresh();
 	}
 
 	private void ConnectToDB() throws DBConnectFail {
 		try {
-			this.connection = DriverManager.getConnection("jdbc:mysql://" + Config.getConfig().getDBAddress() + ":" + Config.getConfig().getDBPort() + "/" + Config.getConfig().getDBName(),
-					Config.getConfig().getDBUsername(), Config.getConfig().getDBPassword());
+			this.connection = DriverManager.getConnection("jdbc:mysql://" + Config.getConfig().getDBAddress() + ":" + Config.getConfig().getDBPort() + "/" + Config.getConfig().getDBName(), Config.getConfig().getDBUsername(), Config.getConfig().getDBPassword());
 		} catch (SQLException e) {
-			throw new DBConnectFail();
+			throw new DBConnectFail(e);
 		}
 	}
 
-	public boolean executeSynchUpdate(String theQuery) {
+	public boolean executeSynchUpdate(String sql) {
 		int rowsChanged = 0;
 
+		Statement statement = null;
 		try {
-			rowsChanged = this.connection.createStatement().executeUpdate(theQuery);
+			statement = this.connection.createStatement();
+			rowsChanged = statement.executeUpdate(sql);
+			statement.close();
 		} catch (SQLException e) {
-			Log.ConsoleLog(theQuery + " :: Update Failed, Checking Connection");
+			StatisticianPlugin.getInstance().getLogger().warning(sql + " :: Update failed, checking connection... (" + e.getMessage() + ")");
 			this.checkConnectionTryReconnect();
 			return false;
+		} finally {
+			if (statement != null) {
+				try {
+					statement.close();
+				} catch (SQLException e) {}
+			}
 		}
-
-		if (rowsChanged > 0)
-			return true;
-		return false;
+		return rowsChanged > 0;
 	}
 
-	public List<Map<String, String>> executeSynchQuery(String theQuery) {
+	public List<Map<String, String>> executeSynchQuery(String sql) {
 		List<Map<String, String>> ColData = new ArrayList<Map<String, String>>();
 
+		Statement statement = null;
+		ResultSet rs = null;
 		try {
-			Statement stmnt = this.connection.createStatement();
-			ResultSet rs = stmnt.executeQuery(theQuery);
-			int Row = 0;
+			statement = this.connection.createStatement();
+			rs = statement.executeQuery(sql);
 			while (rs.next()) {
 				HashMap<String, String> rowToAdd = new HashMap<String, String>();
 				for (int x = 1; x <= rs.getMetaData().getColumnCount(); ++x) {
 					rowToAdd.put(rs.getMetaData().getColumnName(x), rs.getString(x));
 				}
 				ColData.add(rowToAdd);
-				++Row;
 			}
 		} catch (SQLException e) {
-			Log.ConsoleLog(theQuery + " :: Query Failed, Checking Connection");
+			StatisticianPlugin.getInstance().getLogger().warning(sql + " :: Query failed, checking connection... (" + e.getMessage() + ")");
 			this.checkConnectionTryReconnect();
 			return null;
+		} finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {}
+			}
+			if (statement != null) {
+				try {
+					statement.close();
+				} catch (SQLException e) {}
+			}
 		}
 		return ColData;
 	}
 
 	public boolean callStoredProcedure(String procName, List<String> variables) {
-		String storedProcCall = "CALL " + Config.getConfig().getDBName() + "." + procName + "(";
+		StringBuilder sb = new StringBuilder("CALL " + Config.getConfig().getDBName() + "." + procName + "(");
 		if (variables != null) {
-			Iterator<String> itr = variables.iterator();
-			while (itr.hasNext()) {
-				String thisVariable = itr.next();
-				storedProcCall += "'" + thisVariable + "',";
+			for (String variable : variables) {
+				sb.append("'" + variable + "',");
 			}
-			storedProcCall = storedProcCall.substring(0, storedProcCall.length() - 1);
+			sb.deleteCharAt(sb.length() - 1);
 		}
-		storedProcCall += ");";
+		sb.append(");");
+
+		Statement statement = null;
 		try {
-			this.connection.createStatement().executeUpdate(storedProcCall);
+			statement = this.connection.createStatement();
+			statement.executeUpdate(sb.toString());
 		} catch (SQLException e) {
-			Log.ConsoleLog(storedProcCall + " :: Stored Procedure Failed, Checking Connection");
+			StatisticianPlugin.getInstance().getLogger().warning(sb.toString() + " :: Stored procedure failed, checking connection... (" + e.getMessage() + ")");
 			this.checkConnectionTryReconnect();
 			return false;
+		} finally {
+			if (statement != null) {
+				try {
+					statement.close();
+				} catch (SQLException e) {}
+			}
 		}
 
 		return true;
@@ -120,26 +130,52 @@ public class Database {
 	private void checkConnectionTryReconnect() {
 		try {
 			if (this.connection.isValid(10)) {
-				Log.ConsoleLog("Connection is still present... It may of been a malformed Query ?");
+				StatisticianPlugin.getInstance().getLogger().info("Connection is still present, it may of been a malformed query.");
 			} else {
-				Log.ConsoleLog("Connection has been lost with Database, Attempting Reconnect.");
+				this.reconnect();
+			}
+		} catch (SQLException e) {}
+	}
+
+	private void reconnect() {
+		StatisticianPlugin.getInstance().getLogger().warning("Connection has been lost with database, attempting to reconnect.");
+		try {
+			this.ConnectToDB();
+			StatisticianPlugin.getInstance().getLogger().info("Connection to the database re-established, some stats were lost though");
+		} catch (DBConnectFail e) {
+			StatisticianPlugin.getInstance().getLogger().severe("Could not reconnect, stats are going to be lost");
+		}
+	}
+
+	private void patchDB() throws DBConnectFail {
+		int version = 0;
+		try {
+			ResultSet rs = this.connection.createStatement().executeQuery("SELECT dbVersion FROM config");
+			rs.next();
+			version = rs.getInt(1);
+		} catch (SQLException e) {
+			StatisticianPlugin.getInstance().getLogger().info("Could not find a database version, creating one from scratch.");
+			version = 0;
+		}
+
+		if (version < Config.getDBVersion()) {
+			StatisticianPlugin.getInstance().getLogger().info("Patching database from v" + version + " to v" + Config.getDBVersion() + ".");
+
+			while (version < Config.getDBVersion()) {
+				++version;
+
+				InputStream is = this.getClass().getClassLoader().getResourceAsStream("SQLPatches/stats_v" + version + ".sql");
+				if (is == null) throw new DBConnectFail("Could not load database patch v" + version + ".");
+
+				ScriptRunner sr = new ScriptRunner(this.connection, false, true);
 				try {
-					this.connection = DriverManager.getConnection("jdbc:mysql://" + Config.getConfig().getDBAddress() + ":" + Config.getConfig().getDBPort() + "/" + Config.getConfig().getDBName(),
-							Config.getConfig().getDBUsername(), Config.getConfig().getDBPassword());
-					Log.ConsoleLog("Connection to the database re-established, We lost some stats though :(");
-				} catch (SQLException connect_e) {
-					Log.ConsoleLog("Could Not Reconnect :( Stats are going to be lost :(");
+					sr.runScript(new InputStreamReader(is));
+				} catch (Exception e) {
+					throw new DBConnectFail("An error occured while executing the database patch v" + version + ".", e);
 				}
 			}
-		} catch (SQLException e) {
-			Log.ConsoleLog("Connection has been lost with Database, Attempting Reconnect.");
-			try {
-				this.connection = DriverManager.getConnection("jdbc:mysql://" + Config.getConfig().getDBAddress() + ":" + Config.getConfig().getDBPort() + "/" + Config.getConfig().getDBName(),
-						Config.getConfig().getDBUsername(), Config.getConfig().getDBPassword());
-				Log.ConsoleLog("Connection to the database re-established, We lost some stats though :(");
-			} catch (SQLException connect_e) {
-				Log.ConsoleLog("Could Not Reconnect :( Stats are going to be lost :(");
-			}
+
+			StatisticianPlugin.getInstance().getLogger().info("Database patched to version " + version + ".");
 		}
 	}
 }

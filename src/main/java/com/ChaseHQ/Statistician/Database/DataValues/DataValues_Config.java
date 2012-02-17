@@ -26,17 +26,15 @@ public enum DataValues_Config implements IDataValues {
 		return this.columnName;
 	}
 
-	public String getConfigValueString() {
+	public String getValue() {
 		return this.configValue;
 	}
 
-	public Boolean getConfigValueBoolean() {
-		if (this.configValue.equalsIgnoreCase("Y"))
-			return true;
-		return false;
+	public Boolean getValueAsBoolean() {
+		return this.configValue.equalsIgnoreCase("y");
 	}
 
-	public Integer getConfigValueInteger() {
+	public Integer getValueAsInteger() {
 		try {
 			return Integer.parseInt(this.configValue);
 		} catch (NumberFormatException e) {
@@ -44,14 +42,10 @@ public enum DataValues_Config implements IDataValues {
 		}
 	}
 
-	public void __internalSetConfigVal(String value) {
-		this.configValue = value;
-	}
-
-	public static void refreshConfigValues() {
+	public static void refresh() {
 		List<Map<String, String>> results = DBSynchDataGetSet.getValues(DataStores.CONFIGURATION, DataValues_Config.DATABASE_VERSION, Integer.toString(Config.getDBVersion()));
 		for (int x = 0; x < DataValues_Config.values().length; ++x) {
-			DataValues_Config.values()[x].__internalSetConfigVal(results.get(0).get(DataValues_Config.values()[x].columnName));
+			DataValues_Config.values()[x].configValue = results.get(0).get(DataValues_Config.values()[x].columnName);
 		}
 	}
 

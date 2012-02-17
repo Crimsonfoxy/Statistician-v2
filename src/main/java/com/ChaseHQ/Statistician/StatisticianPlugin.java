@@ -3,13 +3,14 @@ package com.ChaseHQ.Statistician;
 import java.util.Timer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.ChaseHQ.Statistician.Config.Config;
+import com.ChaseHQ.Statistician.Database.DBConnectFail;
 import com.ChaseHQ.Statistician.Database.Database;
 import com.ChaseHQ.Statistician.EventDataHandlers.EDHPlayer;
 import com.ChaseHQ.Statistician.Listeners.BlockListener;
@@ -19,6 +20,7 @@ import com.ChaseHQ.Statistician.Stats.PlayerData;
 
 public class StatisticianPlugin extends JavaPlugin {
 	private static StatisticianPlugin singleton = null;
+	private Database database;
 	private ExecutorService executorService;
 	private DataProcessor dataProcessor;
 	private PlayerData playerData;
@@ -42,21 +44,21 @@ public class StatisticianPlugin extends JavaPlugin {
 
 		this.setNaggable(false);
 
-		Log.ConsoleLog("Version " + Config.getStatisticianVersion() + " By ChaseHQ Starting Up...");
-
-		// Make sure the configuration is accessible
-		if (Config.getConfig() == null) {
+		if (this.database == null) {
+			try {
+				this.database = new Database();
+			} catch (ClassNotFoundException e) {
+				this.getLogger().severe("MySQL Driver not found");
+			} catch (DBConnectFail e) {
+				this.getLogger().log(Level.SEVERE, "Critical Error, could not connect to mySQL. Is the database Available? Check config file and try again. (" + e.getMessage() + ")");
+			}
+		}
+		if (this.database == null) {
 			this.getPluginLoader().disablePlugin(this);
 			return;
 		}
 
-		// Check mySQL Dependency
-		if (Database.getDB() == null) {
-			this.getPluginLoader().disablePlugin(this);
-			return;
-		}
-
-		Database.getDB().callStoredProcedure("pluginStartup", null);
+		this.database.callStoredProcedure("pluginStartup", null);
 
 		this.executorService = Executors.newCachedThreadPool();
 
@@ -85,8 +87,6 @@ public class StatisticianPlugin extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		Log.ConsoleLog("Shutting down...");
-
 		if (this.edhPlayer != null) {
 			for (Player player : this.getServer().getOnlinePlayers()) {
 				this.edhPlayer.PlayerQuit(player);
@@ -97,9 +97,8 @@ public class StatisticianPlugin extends JavaPlugin {
 			this.playerData._processData();
 		}
 
-		Database db = Database.getDB();
-		if (db != null) {
-			db.callStoredProcedure("pluginShutdown", null);
+		if (this.database != null) {
+			this.database.callStoredProcedure("pluginShutdown", null);
 		}
 
 		StatisticianPlugin.singleton = null;
@@ -111,22 +110,13 @@ public class StatisticianPlugin extends JavaPlugin {
 
 	private void registerEvents() {
 		PluginManager pm = this.getServer().getPluginManager();
+		pm.registerEvents(this.blockListener, this);
+		pm.registerEvents(this.entityListener, this);
+		pm.registerEvents(this.playerListener, this);
+	}
 
-		// Block Listeners
-		pm.registerEvent(Event.Type.BLOCK_BREAK, this.blockListener, Event.Priority.Normal, this);
-		pm.registerEvent(Event.Type.BLOCK_PLACE, this.blockListener, Event.Priority.Normal, this);
-
-		// Entity Listeners
-		pm.registerEvent(Event.Type.ENTITY_DEATH, this.entityListener, Event.Priority.Normal, this);
-
-		// Player Listeners
-		pm.registerEvent(Event.Type.PLAYER_JOIN, this.playerListener, Event.Priority.Normal, this);
-		pm.registerEvent(Event.Type.PLAYER_QUIT, this.playerListener, Event.Priority.Normal, this);
-		pm.registerEvent(Event.Type.PLAYER_MOVE, this.playerListener, Event.Priority.Normal, this);
-		pm.registerEvent(Event.Type.PLAYER_PICKUP_ITEM, this.playerListener, Event.Priority.Normal, this);
-		pm.registerEvent(Event.Type.PLAYER_DROP_ITEM, this.playerListener, Event.Priority.Normal, this);
-
-		// TODO: Register Inventory Craft Event
+	public Database getDB() {
+		return this.database;
 	}
 
 	public ExecutorService getExecutor() {
