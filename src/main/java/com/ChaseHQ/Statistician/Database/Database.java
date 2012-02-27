@@ -96,7 +96,7 @@ public class Database {
 	}
 
 	public boolean callStoredProcedure(String procName, List<String> variables) {
-		StringBuilder sb = new StringBuilder("CALL " + Config.getConfig().getDBName() + "." + procName + "(");
+		StringBuilder sb = new StringBuilder("CALL `" + Config.getConfig().getDBName() + "`." + procName + "(");
 		if (variables != null) {
 			for (String variable : variables) {
 				sb.append("'" + variable + "',");
