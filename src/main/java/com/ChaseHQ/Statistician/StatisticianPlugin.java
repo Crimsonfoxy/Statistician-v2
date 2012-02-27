@@ -12,6 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.ChaseHQ.Statistician.Config.Config;
 import com.ChaseHQ.Statistician.Database.DBConnectFail;
 import com.ChaseHQ.Statistician.Database.Database;
+import com.ChaseHQ.Statistician.Database.DataValues.DataValues_Config;
 import com.ChaseHQ.Statistician.EventDataHandlers.EDHPlayer;
 import com.ChaseHQ.Statistician.Listeners.BlockListener;
 import com.ChaseHQ.Statistician.Listeners.EntityListener;
@@ -58,6 +59,8 @@ public class StatisticianPlugin extends JavaPlugin {
 			return;
 		}
 
+		DataValues_Config.refresh();
+
 		this.database.callStoredProcedure("pluginStartup", null);
 
 		this.executorService = Executors.newCachedThreadPool();
@@ -99,6 +102,7 @@ public class StatisticianPlugin extends JavaPlugin {
 
 		if (this.database != null) {
 			this.database.callStoredProcedure("pluginShutdown", null);
+			this.database = null;
 		}
 
 		StatisticianPlugin.singleton = null;

@@ -14,7 +14,6 @@ import java.util.Map;
 
 import com.ChaseHQ.Statistician.StatisticianPlugin;
 import com.ChaseHQ.Statistician.Config.Config;
-import com.ChaseHQ.Statistician.Database.DataValues.DataValues_Config;
 
 public class Database {
 	private static Database _singletonDB = null;
@@ -30,8 +29,6 @@ public class Database {
 		this.patchDB();
 
 		Database._singletonDB = this;
-
-		DataValues_Config.refresh();
 	}
 
 	private void ConnectToDB() throws DBConnectFail {
