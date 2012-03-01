@@ -1,31 +1,10 @@
 package com.ChaseHQ.Statistician.Database.DataValues;
 
-import org.bukkit.entity.Blaze;
-import org.bukkit.entity.CaveSpider;
-import org.bukkit.entity.Chicken;
-import org.bukkit.entity.Cow;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Creeper;
-import org.bukkit.entity.EnderDragon;
-import org.bukkit.entity.Enderman;
-import org.bukkit.entity.Ghast;
-import org.bukkit.entity.Giant;
-import org.bukkit.entity.MagmaCube;
 import org.bukkit.entity.Monster;
-import org.bukkit.entity.MushroomCow;
-import org.bukkit.entity.Pig;
-import org.bukkit.entity.PigZombie;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Sheep;
-import org.bukkit.entity.Silverfish;
 import org.bukkit.entity.Skeleton;
-import org.bukkit.entity.Slime;
-import org.bukkit.entity.Snowman;
-import org.bukkit.entity.Spider;
-import org.bukkit.entity.Squid;
-import org.bukkit.entity.Villager;
 import org.bukkit.entity.Wolf;
-import org.bukkit.entity.Zombie;
 
 public enum DBStaticValue_Creatures implements IStaticValue {
 	NONE(0),
@@ -71,83 +50,59 @@ public enum DBStaticValue_Creatures implements IStaticValue {
 	}
 
 	public static DBStaticValue_Creatures mapCreature(Creature creature) {
-
-		if (creature instanceof Player)
-			return DBStaticValue_Creatures.PLAYER;
-
-		if (creature instanceof Chicken)
-			return DBStaticValue_Creatures.CHICKEN;
-
-		if (creature instanceof MushroomCow)
-			return DBStaticValue_Creatures.MUSHROOMCOW;
-
-		if (creature instanceof Cow)
-			return DBStaticValue_Creatures.COW;
-
-		if (creature instanceof Creeper) {
-			if (((Creeper)creature).isPowered()) return DBStaticValue_Creatures.ELECTRIFIED_CREEPER;
-			return DBStaticValue_Creatures.CREEPER;
+		switch (creature.getType()) {
+			case PLAYER:
+				return DBStaticValue_Creatures.PLAYER;
+			case CHICKEN:
+				return DBStaticValue_Creatures.CHICKEN;
+			case MUSHROOM_COW:
+				return DBStaticValue_Creatures.MUSHROOMCOW;
+			case COW:
+				return DBStaticValue_Creatures.COW;
+			case CREEPER:
+				if (((Creeper)creature).isPowered()) return DBStaticValue_Creatures.ELECTRIFIED_CREEPER;
+				return DBStaticValue_Creatures.CREEPER;
+			case GHAST:
+				return DBStaticValue_Creatures.GHAST;
+			case PIG:
+				return DBStaticValue_Creatures.PIG;
+			case PIG_ZOMBIE:
+				return DBStaticValue_Creatures.PIG_ZOMBIE;
+			case SHEEP:
+				return DBStaticValue_Creatures.SHEEP;
+			case SKELETON:
+				if (((Skeleton)creature).isInsideVehicle()) return DBStaticValue_Creatures.SPIDER_JOCKY;
+				return DBStaticValue_Creatures.SKELETON;
+			case MAGMA_CUBE:
+				return DBStaticValue_Creatures.MAGMACUBE;
+			case SLIME:
+				return DBStaticValue_Creatures.SLIME;
+			case SQUID:
+				return DBStaticValue_Creatures.SQUID;
+			case WOLF:
+				if (((Wolf)creature).isTamed()) return DBStaticValue_Creatures.TAME_WOLF;
+				return DBStaticValue_Creatures.WOLF;
+			case ZOMBIE:
+				return DBStaticValue_Creatures.ZOMBIE;
+			case CAVE_SPIDER:
+				return DBStaticValue_Creatures.CAVESPIDER;
+			case SPIDER:
+				return DBStaticValue_Creatures.SPIDER;
+			case GIANT:
+				return DBStaticValue_Creatures.GIANT;
+			case BLAZE:
+				return DBStaticValue_Creatures.BLAZE;
+			case ENDER_DRAGON:
+				return DBStaticValue_Creatures.ENDERDRAGON;
+			case ENDERMAN:
+				return DBStaticValue_Creatures.ENDERMAN;
+			case SILVERFISH:
+				return DBStaticValue_Creatures.SILVERFISH;
+			case SNOWMAN:
+				return DBStaticValue_Creatures.SNOWMAN;
+			case VILLAGER:
+				return DBStaticValue_Creatures.VILLAGER;
 		}
-
-		if (creature instanceof Ghast)
-			return DBStaticValue_Creatures.GHAST;
-
-		if (creature instanceof Pig)
-			return DBStaticValue_Creatures.PIG;
-
-		if (creature instanceof PigZombie)
-			return DBStaticValue_Creatures.PIG_ZOMBIE;
-
-		if (creature instanceof Sheep)
-			return DBStaticValue_Creatures.SHEEP;
-
-		if (creature instanceof Skeleton) {
-			if (((Skeleton)creature).isInsideVehicle()) return DBStaticValue_Creatures.SPIDER_JOCKY;
-			return DBStaticValue_Creatures.SKELETON;
-		}
-
-		if (creature instanceof MagmaCube)
-			return DBStaticValue_Creatures.MAGMACUBE;
-
-		if (creature instanceof Slime)
-			return DBStaticValue_Creatures.SLIME;
-
-		if (creature instanceof Squid)
-			return DBStaticValue_Creatures.SQUID;
-
-		if (creature instanceof Wolf) {
-			if (((Wolf)creature).isTamed()) return DBStaticValue_Creatures.TAME_WOLF;
-			return DBStaticValue_Creatures.WOLF;
-		}
-
-		if (creature instanceof Zombie) return DBStaticValue_Creatures.ZOMBIE;
-
-		if (creature instanceof CaveSpider)
-			return DBStaticValue_Creatures.CAVESPIDER;
-
-		if (creature instanceof Spider) return DBStaticValue_Creatures.SPIDER;
-
-		if (creature instanceof Giant)
-			return DBStaticValue_Creatures.GIANT;
-
-		if (creature instanceof Blaze)
-			return DBStaticValue_Creatures.BLAZE;
-
-		if (creature instanceof EnderDragon)
-			return DBStaticValue_Creatures.ENDERDRAGON;
-
-		if (creature instanceof Enderman)
-			return DBStaticValue_Creatures.ENDERMAN;
-
-		if (creature instanceof Silverfish)
-			return DBStaticValue_Creatures.SILVERFISH;
-
-		if (creature instanceof Snowman)
-			return DBStaticValue_Creatures.SNOWMAN;
-
-		if (creature instanceof Villager)
-			return DBStaticValue_Creatures.VILLAGER;
-
 		if (creature instanceof Monster)
 			return DBStaticValue_Creatures.MONSTER;
 

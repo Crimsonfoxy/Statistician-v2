@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Boat;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Pig;
-import org.bukkit.entity.Vehicle;
 
 import com.ChaseHQ.Statistician.Database.DBSynchDataGetSet;
 import com.ChaseHQ.Statistician.Database.DataValues.DBDataValues_Players;
@@ -57,7 +57,7 @@ public class PlayerData implements IProcessable {
 	}
 
 	//public void incrementStepsTaken(String UUID, Location loc, boolean inMinecart, boolean onPig, boolean inBoat) {
-	public void incrementStepsTaken(String UUID, Location loc, Class<? extends Vehicle> vehicleType) {
+	public void incrementStepsTaken(String UUID, Location loc, Class<? extends Entity> vehicleType) {
 		_InternalPlayer ip = this._watchedPlayers.get(UUID);
 		if (ip == null) //Log.ConsoleLog("Tried to set data values on player that was not added to watch '" + UUID + "'");
 		return;

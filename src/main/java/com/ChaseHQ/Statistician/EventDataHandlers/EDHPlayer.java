@@ -9,7 +9,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Slime;
-import org.bukkit.entity.Vehicle;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.ChaseHQ.Statistician.StatisticianPlugin;
@@ -84,7 +83,7 @@ public class EDHPlayer {
 		});
 	}
 
-	public void PlayerMove(final Player player, final Class<? extends Vehicle> vehicleType) {
+	public void PlayerMove(final Player player, final Class<? extends Entity> vehicleType) {
 		this.execute(player, new Runnable() {
 			@Override
 			public void run() {
