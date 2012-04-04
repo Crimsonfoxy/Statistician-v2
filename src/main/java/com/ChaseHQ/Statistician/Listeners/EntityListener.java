@@ -24,7 +24,7 @@ public class EntityListener implements Listener {
 		this.edhPlayer = passedEDH;
 	}
 
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onEntityDeath(EntityDeathEvent event) {
 		Entity entity = event.getEntity();
 		EntityDamageEvent lastDamageEvent = entity.getLastDamageCause();

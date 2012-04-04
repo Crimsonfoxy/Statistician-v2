@@ -16,12 +16,12 @@ public class BlockListener implements Listener {
 		this.edhPlayer = passedEDH;
 	}
 
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event) {
 		this.edhPlayer.PlayerBlockBreak(event.getPlayer(), event.getBlock().getTypeId());
 	}
 
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event) {
 		if (event.getBlock().getType() != Material.AIR) {
 			this.edhPlayer.PlayerBlockPlace(event.getPlayer(), event.getBlock().getTypeId());
