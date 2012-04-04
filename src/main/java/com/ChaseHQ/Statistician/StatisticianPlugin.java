@@ -55,6 +55,7 @@ public class StatisticianPlugin extends JavaPlugin {
 			}
 		}
 		if (this.database == null) {
+			StatisticianPlugin.singleton = null;
 			this.getPluginLoader().disablePlugin(this);
 			return;
 		}
@@ -90,6 +91,8 @@ public class StatisticianPlugin extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
+		if (StatisticianPlugin.singleton == null || !StatisticianPlugin.singleton.equals(this)) return;
+
 		if (this.edhPlayer != null) {
 			for (Player player : this.getServer().getOnlinePlayers()) {
 				this.edhPlayer.PlayerQuit(player);
