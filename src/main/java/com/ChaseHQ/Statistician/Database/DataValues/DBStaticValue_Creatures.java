@@ -36,7 +36,9 @@ public enum DBStaticValue_Creatures implements IStaticValue {
 	MUSHROOMCOW(25),
 	SILVERFISH(26),
 	SNOWMAN(27),
-	VILLAGER(28);
+	VILLAGER(28),
+	OCELOT(29),
+	IRON_GOLEM(30);
 
 	private final Integer id;
 
@@ -102,6 +104,10 @@ public enum DBStaticValue_Creatures implements IStaticValue {
 				return DBStaticValue_Creatures.SNOWMAN;
 			case VILLAGER:
 				return DBStaticValue_Creatures.VILLAGER;
+			case OCELOT:
+				return DBStaticValue_Creatures.OCELOT;
+			case IRON_GOLEM:
+				return DBStaticValue_Creatures.IRON_GOLEM;
 		}
 		if (creature instanceof Monster)
 			return DBStaticValue_Creatures.MONSTER;

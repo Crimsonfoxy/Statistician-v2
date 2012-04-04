@@ -20,7 +20,8 @@ public enum DBStaticValue_KillTypes implements IStaticValue {
 	SUICIDE(14),
 	STARVATION(15),
 	POISON(16),
-	MAGIC(17);
+	MAGIC(17),
+	MELTING(18);
 
 	private final Integer id;
 
@@ -70,6 +71,8 @@ public enum DBStaticValue_KillTypes implements IStaticValue {
 				return DBStaticValue_KillTypes.POISON;
 			case MAGIC:
 				return DBStaticValue_KillTypes.MAGIC;
+			case MELTING:
+				return DBStaticValue_KillTypes.MELTING;
 		}
 
 		return DBStaticValue_KillTypes.NONE;

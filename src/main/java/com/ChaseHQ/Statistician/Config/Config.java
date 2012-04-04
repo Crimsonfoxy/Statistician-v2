@@ -6,7 +6,7 @@ import com.ChaseHQ.Statistician.StatisticianPlugin;
 
 // *NOTE Config class must not be used before the plugin's onEnable is called.
 public class Config {
-	private static final int _dbVersion = 8;
+	private static final int _dbVersion = 9;
 
 	private static Config instance = null;
 
