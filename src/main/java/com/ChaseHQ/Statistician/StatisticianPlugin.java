@@ -24,6 +24,7 @@ public class StatisticianPlugin extends JavaPlugin {
 	private Database database;
 	private ExecutorService executorService;
 	private DataProcessor dataProcessor;
+	private Timer dataProcessorTimer;
 	private PlayerData playerData;
 	private EDHPlayer edhPlayer;
 
@@ -73,7 +74,8 @@ public class StatisticianPlugin extends JavaPlugin {
 		this.dataProcessor = new DataProcessor();
 		this.dataProcessor.addProcessable(this.playerData);
 
-		new Timer(true).scheduleAtFixedRate(this.dataProcessor, Config.getConfig().getDBUpdateTime(), Config.getConfig().getDBUpdateTime());
+		this.dataProcessorTimer = new Timer(true);
+		this.dataProcessorTimer.scheduleAtFixedRate(this.dataProcessor, Config.getConfig().getDBUpdateTime(), Config.getConfig().getDBUpdateTime());
 
 		// Setup Listeners
 		this.playerListener = new PlayerListener(this.edhPlayer);
@@ -92,6 +94,8 @@ public class StatisticianPlugin extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		if (StatisticianPlugin.singleton == null || !StatisticianPlugin.singleton.equals(this)) return;
+
+		this.dataProcessorTimer.cancel();
 
 		if (this.edhPlayer != null) {
 			for (Player player : this.getServer().getOnlinePlayers()) {
