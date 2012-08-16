@@ -18,7 +18,7 @@ INSERT INTO `resource_desc` VALUES ('133', 'Block of Emerald');
 INSERT INTO `resource_desc` VALUES ('134', 'Spruce Wood Stairs');
 INSERT INTO `resource_desc` VALUES ('135', 'Birch Wood Stairs');
 INSERT INTO `resource_desc` VALUES ('136', 'Jungle Wood Stairs');
-INSERT INTO `resource_desc` VALUES ('384', 'Bottle o' Enchanting');
+INSERT INTO `resource_desc` VALUES ('384', 'Bottle o'' Enchanting');
 INSERT INTO `resource_desc` VALUES ('385', 'Fire Charge');
 INSERT INTO `resource_desc` VALUES ('386', 'Book and Quill');
 INSERT INTO `resource_desc` VALUES ('387', 'Written Book');
