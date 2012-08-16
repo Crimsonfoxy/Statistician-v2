@@ -12,6 +12,7 @@ public class Config {
 
 	private FileConfiguration config;
 
+	private boolean verboseErrors;
 	private String dbAddress;
 	private int dbPort;
 	private String dbName;
@@ -56,6 +57,7 @@ public class Config {
 		this.config = plugin.getConfig();
 		this.config.options().copyDefaults(true);
 
+		this.verboseErrors = this.config.getBoolean("verbose_errors");
 		this.dbAddress = this.config.getString("database_address");
 		this.dbPort = this.config.getInt("database_port");
 		this.dbName = this.config.getString("database_name");
@@ -64,6 +66,13 @@ public class Config {
 		this.dbUpdateTime = this.config.getInt("database_update_time");
 
 		plugin.saveConfig();
+	}
+
+	/**
+	 * @return if should output verbose errors
+	 */
+	public boolean isVerboseErrors() {
+		return this.verboseErrors;
 	}
 
 	/**

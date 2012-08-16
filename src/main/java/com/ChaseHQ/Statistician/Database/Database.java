@@ -49,6 +49,9 @@ public class Database {
 			statement.close();
 		} catch (SQLException e) {
 			StatisticianPlugin.getInstance().getLogger().warning(sql + " :: Update failed, checking connection... (" + e.getMessage() + ")");
+			if (Config.getConfig().isVerboseErrors()) {
+				e.printStackTrace();
+			}
 			this.checkConnectionTryReconnect();
 			return false;
 		} finally {
@@ -78,6 +81,9 @@ public class Database {
 			}
 		} catch (SQLException e) {
 			StatisticianPlugin.getInstance().getLogger().warning(sql + " :: Query failed, checking connection... (" + e.getMessage() + ")");
+			if (Config.getConfig().isVerboseErrors()) {
+				e.printStackTrace();
+			}
 			this.checkConnectionTryReconnect();
 			return null;
 		} finally {
@@ -111,6 +117,9 @@ public class Database {
 			statement.executeUpdate(sb.toString());
 		} catch (SQLException e) {
 			StatisticianPlugin.getInstance().getLogger().warning(sb.toString() + " :: Stored procedure failed, checking connection... (" + e.getMessage() + ")");
+			if (Config.getConfig().isVerboseErrors()) {
+				e.printStackTrace();
+			}
 			this.checkConnectionTryReconnect();
 			return false;
 		} finally {
@@ -131,7 +140,11 @@ public class Database {
 			} else {
 				this.reconnect();
 			}
-		} catch (SQLException e) {}
+		} catch (SQLException e) {
+			if (Config.getConfig().isVerboseErrors()) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void reconnect() {
@@ -141,6 +154,9 @@ public class Database {
 			StatisticianPlugin.getInstance().getLogger().info("Connection to the database re-established, some stats were lost though");
 		} catch (DBConnectFail e) {
 			StatisticianPlugin.getInstance().getLogger().severe("Could not reconnect, stats are going to be lost");
+			if (Config.getConfig().isVerboseErrors()) {
+				e.printStackTrace();
+			}
 		}
 	}
 

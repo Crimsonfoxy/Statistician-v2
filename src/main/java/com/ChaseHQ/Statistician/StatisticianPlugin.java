@@ -51,8 +51,14 @@ public class StatisticianPlugin extends JavaPlugin {
 				this.database = new Database();
 			} catch (ClassNotFoundException e) {
 				this.getLogger().severe("MySQL Driver not found");
+				if (Config.getConfig().isVerboseErrors()) {
+					e.printStackTrace();
+				}
 			} catch (DBConnectFail e) {
 				this.getLogger().log(Level.SEVERE, "Critical Error, could not connect to mySQL. Is the database Available? Check config file and try again. (" + e.getMessage() + ")");
+				if (Config.getConfig().isVerboseErrors()) {
+					e.printStackTrace();
+				}
 			}
 		}
 		if (this.database == null) {
